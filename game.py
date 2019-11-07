@@ -3,6 +3,7 @@ import curses
 
 from display import Display
 from menu import Menu
+from scoreboard import ScoreBoard
 
 
 class Game:
@@ -12,7 +13,9 @@ class Game:
       self.screen = screen
       self.menu = Menu()
       self.display = Display(screen)
+      self.scoreboard = ScoreBoard('scores')
       self.numbers = []
+      self.score = 0
 
    def show_menu(self):
       while True:
@@ -21,13 +24,14 @@ class Game:
          if entry_selected == self.menu.items[0]: # Play
             self.play()
          elif entry_selected == self.menu.items[1]: # Scoreboard
-            self.display.print_message('Scoreboard is not implemented yet!', clear=True)
+            self.display.print_scoreboard(self.scoreboard.high_scores)
             self.screen.getch()
          elif entry_selected == self.menu.items[2]: # Exit
             break
 
    def play(self):
       self.numbers = [[None for i in range(self.size)] for j in range(self.size)]
+      self.score = 0
 
       # Generate 2 initial numbers:
       for _ in range(2):
@@ -37,6 +41,7 @@ class Game:
       # Game loop
       while True:
          self.display.print_grid(self.numbers)
+         self.display.print_score(self.score)
 
          direction = self.screen.getch()
          if direction in [curses.KEY_UP, curses.KEY_DOWN, curses.KEY_LEFT, curses.KEY_RIGHT]:
@@ -47,6 +52,7 @@ class Game:
             # Game over condition - grid is full
             if num is None:
                self.display.print_message('Game Over! Press q to return to menu.')
+               self.scoreboard.add_score(self.score)
                while self.screen.getkey() != 'q':
                   pass
                break
@@ -69,6 +75,7 @@ class Game:
       while i < len(numbers) - 1:
          if numbers[i] == numbers[i+1]:
             numbers[i] *= 2
+            self.score += numbers[i]
             del(numbers[i+1])
             i += 1
          i += 1

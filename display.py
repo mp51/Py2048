@@ -49,6 +49,19 @@ class Display:
 
       self.screen.refresh()
 
+   def print_score(self, score):
+      score_text = f'Score: {score}'
+      _, sw = self.screen.getmaxyx()
+      self.screen.addstr(1, sw//2 - len(score_text)//2, score_text)
+
+   def print_scoreboard(self, scores):
+      self.screen.clear()
+      sh, sw = self.screen.getmaxyx()
+      count = len(scores)
+      for row, score in enumerate(scores):
+         score_text = f'{row+1}:\t\t{score}'
+         self.screen.addstr(sh//2 - count//2 + row, int(sw/2.5), score_text)
+
    def print_message(self, message, clear=False):
       if clear:
          self.screen.clear()
