@@ -1,12 +1,18 @@
 import curses
 from curses import textpad
+import math
 
 class Display:
    def __init__(self, screen, box_width=10, box_height=4):
       self.screen = screen
       self.box_width = box_width
       self.box_height = box_height
-      curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+
+      # Init colors
+      curses.start_color()
+      curses.use_default_colors()
+      for i in range(0, curses.COLORS):
+         curses.init_pair(i, curses.COLOR_BLACK, 255-i)
 
    def print_menu(self, menu):
       self.screen.clear()
@@ -41,11 +47,19 @@ class Display:
                               y_pos, x_pos, 
                               y_pos+self.box_height, x_pos+self.box_width)
 
-            # Number text
-            num_text = str(number) if number is not None else ''
-            y_pos = y_offset + i*self.box_height + self.box_height//2
-            x_pos = x_offset + j*self.box_width + self.box_width//2 - len(num_text)
-            self.screen.addstr(y_pos, x_pos, num_text)
+            if number:
+               # Color box
+               color = int(math.log(number, 2))
+               for row in range(self.box_height - 1):
+                  filler = ' ' * (self.box_width-2)
+                  self.screen.addstr(y_pos+row+1, x_pos+1, filler, curses.color_pair(color))
+                  self.screen.refresh()
+
+               # Number text
+               num_text = str(number)
+               y_pos += self.box_height//2
+               x_pos += self.box_width//2 - len(num_text)
+               self.screen.addstr(y_pos, x_pos, num_text, curses.color_pair(color))
 
       self.screen.refresh()
 
@@ -53,6 +67,7 @@ class Display:
       score_text = f'Score: {score}'
       _, sw = self.screen.getmaxyx()
       self.screen.addstr(1, sw//2 - len(score_text)//2, score_text)
+      self.screen.refresh()
 
    def print_scoreboard(self, scores):
       self.screen.clear()
