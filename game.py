@@ -8,24 +8,23 @@ from scoreboard import ScoreBoard
 
 class Game:
    generated_numbers = [2, 4]
-   def __init__(self, screen, size):
+   def __init__(self, size, display):
       self.size = size
-      self.screen = screen
       self.menu = Menu()
-      self.display = Display(screen)
+      self.display = display
       self.scoreboard = ScoreBoard('scores')
       self.numbers = []
       self.score = 0
 
    def show_menu(self):
       while True:
-         entry_selected = self.menu.choose(self.screen, self.display)
+         entry_selected = self.menu.choose(self.display)
 
          if entry_selected == self.menu.items[0]: # Play
             self.play()
          elif entry_selected == self.menu.items[1]: # Scoreboard
             self.display.print_scoreboard(self.scoreboard.high_scores)
-            self.screen.getch()
+            self.display.get_input()
          elif entry_selected == self.menu.items[2]: # Exit
             break
 
@@ -43,7 +42,7 @@ class Game:
          self.display.print_grid(self.numbers)
          self.display.print_score(self.score)
 
-         direction = self.screen.getch()
+         direction = self.display.get_input()
          if direction in [curses.KEY_UP, curses.KEY_DOWN, curses.KEY_LEFT, curses.KEY_RIGHT]:
             self.move_numbers(direction)
 
@@ -53,7 +52,7 @@ class Game:
             if num is None:
                self.display.print_message('Game Over! Press q to return to menu.')
                self.scoreboard.add_score(self.score)
-               while self.screen.getkey() != 'q':
+               while self.display.get_input() != ord('q'):
                   pass
                break
 

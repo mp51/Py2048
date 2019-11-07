@@ -14,6 +14,9 @@ class Display:
       for i in range(0, curses.COLORS):
          curses.init_pair(i, curses.COLOR_BLACK, 255-i)
 
+   def get_input(self):
+      return self.screen.getch()
+
    def print_menu(self, menu):
       self.screen.clear()
       h, w = self.screen.getmaxyx()

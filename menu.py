@@ -5,10 +5,10 @@ class Menu:
       self.items = ['Play', 'Scoreboard', 'Exit']
       self.current_row_idx = 0
 
-   def choose(self, screen_input, display):
+   def choose(self, display):
       while True:
          display.print_menu(self)
-         key = screen_input.getch()
+         key = display.get_input()
 
          if key == curses.KEY_UP and self.current_row_idx > 0:
             self.current_row_idx -= 1
